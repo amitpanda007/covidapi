@@ -208,9 +208,7 @@ router.get("/avlByPin", async function (req, res, next) {
     console.log(`Query Params: PIN: ${pincode}, Days: ${days}, Min Age Limit: ${minAgeLimit}, Available Capacity: ${availableCapacity}`);
     const centerInfo = await getCenterInfo(pincode, days);
     const filteredAgeCenter = await filterByMinMaxAgeLimit(centerInfo, minAgeLimit, maxAgeLimit);
-    console.log(filteredAgeCenter);
     const filteredAvailableCenter = await filterByAvailableLimit(filteredAgeCenter, availableCapacity);
-    console.log(filteredAvailableCenter);
     res.send(filteredAvailableCenter);
   } catch (err) {
     console.error(`Error while getting data`, err.message);
