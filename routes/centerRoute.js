@@ -5,7 +5,6 @@ const config = require("../config");
 const common = require("../services/common");
 const dateformat = require("dateformat");
 
-/* GET Stocks Data. */
 router.get("/", async function (req, res, next) {
   try {
     res.json({ message: "Working" });
@@ -24,7 +23,8 @@ async function getCenterInfo(pincode, days) {
       const today = new Date();
       const newDate = dateformat(today, "dd-mm-yyyy")
       apiUrl = `${config.cowinApiUrl}api/v2/appointment/sessions/public/calendarByPin?pincode=${pincode}&date=${newDate}`;
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, {headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36' },});
+      // console.log(response);
       const centers = await response.json();
       return centers
     }else {
@@ -35,7 +35,7 @@ async function getCenterInfo(pincode, days) {
         const futureDate = dateformat(newFutureDate, "dd-mm-yyyy")
         apiUrl = `${config.cowinApiUrl}api/v2/appointment/sessions/public/calendarByPin?pincode=${pincode}&date=${futureDate}`;
         console.log(`Making API Request: ${apiUrl}`);
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36' },});
         const newCenters = await response.json();
         centerList = await aggregateCentersSessions(centerList, newCenters)
       }
@@ -43,7 +43,8 @@ async function getCenterInfo(pincode, days) {
       return await centerList;
     }
   } catch (error) {
-    console.log(error.response);
+    console.log(error);
+    // console.log(error.response);
   }
 }
 
@@ -104,7 +105,7 @@ async function getDistrictCenterInfo(districtId, days) {
       const newDate = dateformat(today, "dd-mm-yyyy")
       //https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=446&date=03-05-2021
       apiUrl = `${config.cowinApiUrl}api/v2/appointment/sessions/public/calendarByDistrict?district_id=${districtId}&date=${newDate}`;
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, {headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36' },});
       const centers = await response.json();
       return centers
     }else {
@@ -115,11 +116,10 @@ async function getDistrictCenterInfo(districtId, days) {
         const futureDate = dateformat(newFutureDate, "dd-mm-yyyy")
         apiUrl = `${config.cowinApiUrl}api/v2/appointment/sessions/public/calendarByDistrict?district_id=${districtId}&date=${futureDate}`;
         console.log(`Making API Request: ${apiUrl}`);
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36' },});
         const newCenters = await response.json();
         centerList = await aggregateCentersSessions(centerList, newCenters)
       }
-      // console.log(centerList);
       return await centerList;
     }
   } catch (error) {
@@ -135,8 +135,6 @@ async function filterByMinMaxAgeLimit(centerInfo, minAgeLimit, maxAgeLimit) {
 }
 
 async function filterByMinAgeLimit(centerInfo, minAgeLimit) {
-  // let filteredCenters = [];
-
   for(let i = 0; i < centerInfo.centers.length; i++) {
     const curCenter = centerInfo.centers[i];
     if(curCenter.sessions[0].min_age_limit <= minAgeLimit) {
